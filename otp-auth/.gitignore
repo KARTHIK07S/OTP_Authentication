@@ -1,0 +1,16 @@
+# Maven / Java
+/backend/target/
+/backend/.mvn/
+/backend/.idea/
+/backend/*.iml
+
+# Node / React
+/frontend/node_modules/
+frontend/build/
+
+# System files
+.DS_Store
+thumbs.db
+
+# Secrets
+/backend/src/main/resources/application.properties
