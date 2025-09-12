@@ -1,4 +1,4 @@
-# OTP Authentication Monorepo
+# OTP Authentication
 
 This project contains both backend (Spring Boot + JWT + Twilio) and frontend (React) for OTP login.
 
