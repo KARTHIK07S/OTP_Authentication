@@ -1,104 +1,14 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OTP Authentication</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      width: 320px;
-      text-align: center;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    #status {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>OTP Authentication</h2>
-    <input type="text" id="phone" placeholder="Enter phone number (+91xxxx)">
-    <button onclick="sendOtp()">Send OTP</button>
-    <input type="text" id="otp" placeholder="Enter OTP">
-    <button onclick="verifyOtp()">Verify OTP</button>
-    <p id="status"></p>
-  </div>
-
-  <script>
-    const API_BASE = "http://localhost:8080/api/auth";
-
-    async function sendOtp() {
-      const phone = document.getElementById("phone").value;
-      if (!phone) {
-        document.getElementById("status").innerText = "Enter a phone number";
-        return;
-      }
-      try {
-        const res = await fetch(`${API_BASE}/send-otp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone })
-        });
-        const data = await res.json();
-        document.getElementById("status").innerText = data.message;
-      } catch (err) {
-        document.getElementById("status").innerText = "Error sending OTP";
-      }
-    }
-
-    async function verifyOtp() {
-      const phone = document.getElementById("phone").value;
-      const otp = document.getElementById("otp").value;
-      if (!otp) {
-        document.getElementById("status").innerText = "Enter the OTP";
-        return;
-      }
-      try {
-        const res = await fetch(`${API_BASE}/verify-otp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, otp })
-        });
-        const data = await res.json();
-        document.getElementById("status").innerText = data.message;
-      } catch (err) {
-        document.getElementById("status").innerText = "Error verifying OTP";
-      }
-    }
-  </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OTP Authentication</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
 </html>
+
 
