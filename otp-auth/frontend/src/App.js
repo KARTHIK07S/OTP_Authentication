@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import 'react-phone-input-2/lib/style.css';
+import PhoneInput from 'react-phone-input-2';
 
 function App() {
   const [phone, setPhone] = useState("");
@@ -15,7 +17,7 @@ function App() {
       const res = await fetch(API_BASE + "/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone })
+        body: JSON.stringify({ phone: "+" + phone }) // Ensure proper format
       });
       const data = await res.json();
       if (res.ok) {
@@ -35,7 +37,7 @@ function App() {
       const res = await fetch(API_BASE + "/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp })
+        body: JSON.stringify({ phone: "+" + phone, otp })
       });
       const data = await res.json();
       if (res.ok) {
@@ -53,23 +55,28 @@ function App() {
   return (
     <div style={{ maxWidth: 420, margin: "50px auto", fontFamily: "Arial, sans-serif" }}>
       <h2>OTP Login</h2>
+
       {step === "phone" && (
         <>
-          <label>Phone (Eg:+91xxxxxxxxx):</label>
-          <input
-            type="text"
+          <label>Phone Number:</label>
+          <PhoneInput
+            country={'in'}
             value={phone}
-            onChange={e => setPhone(e.target.value)}
-            placeholder="+91xxxxxxxxx"
-            style={{ width: "100%", padding: "8px", marginTop: "6px", marginBottom: "10px" }}
+            onChange={setPhone}
+            inputStyle={{ width: "100%" }}
           />
-          <button onClick={sendOtp} style={{ padding: "8px 12px" }}>Send OTP</button>
+          <button
+            onClick={sendOtp}
+            style={{ padding: "8px 12px", marginTop: "10px" }}
+          >
+            Send OTP
+          </button>
         </>
       )}
 
       {step === "otp" && (
         <>
-          <div>OTP sent to <b>{phone}</b></div>
+          <div>OTP sent to <b>+{phone}</b></div>
           <label>Enter OTP:</label>
           <input
             type="text"
@@ -85,7 +92,7 @@ function App() {
 
       {step === "done" && (
         <>
-          <div style={{ marginBottom: 10 }}>Logged in! JWT Token:</div>
+          <div style={{ marginBottom: 10 }}>Logged in! 🎉 JWT Token:</div>
           <textarea readOnly value={token} style={{ width: "100%", minHeight: 60 }} />
         </>
       )}
@@ -96,3 +103,5 @@ function App() {
 }
 
 export default App;
+
+
