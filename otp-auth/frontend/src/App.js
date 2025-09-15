@@ -10,13 +10,16 @@ function App() {
   const API_BASE = "http://localhost:8080/api/auth";
 
   const sendOtp = async () => {
-    if (!phone) { setStatus("Enter a phone number"); return; }
+    if (!phone) {
+      setStatus("Enter a phone number");
+      return;
+    }
     setStatus("Sending OTP...");
     try {
       const res = await fetch(`${API_BASE}/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone })
+        body: JSON.stringify({ phone }),
       });
       const data = await res.json();
       setStatus(data?.message || "No response message");
@@ -27,13 +30,16 @@ function App() {
   };
 
   const verifyOtp = async () => {
-    if (!otp) { setStatus("Enter the OTP"); return; }
+    if (!otp) {
+      setStatus("Enter the OTP");
+      return;
+    }
     setStatus("Verifying...");
     try {
       const res = await fetch(`${API_BASE}/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp })
+        body: JSON.stringify({ phone, otp }),
       });
       const data = await res.json();
       setStatus(data?.message || "No response message");
@@ -46,11 +52,14 @@ function App() {
   return (
     <div className="container">
       <h2>OTP Authentication</h2>
+
       <input
-        type="text"
+        type="tel"
         id="phone"
+        name="phone"
         placeholder="Enter phone number (+91xxxx)"
         value={phone}
+        autoComplete="tel"     // ✅ React uses camelCase
         onChange={(e) => setPhone(e.target.value)}
       />
       <button onClick={sendOtp}>Send OTP</button>
@@ -58,8 +67,10 @@ function App() {
       <input
         type="text"
         id="otp"
+        name="otp"
         placeholder="Enter OTP"
         value={otp}
+        autoComplete="one-time-code"   // ✅ fixed
         onChange={(e) => setOtp(e.target.value)}
       />
       <button onClick={verifyOtp}>Verify OTP</button>
