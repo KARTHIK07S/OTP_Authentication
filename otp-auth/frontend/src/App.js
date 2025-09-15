@@ -48,6 +48,7 @@ function App() {
       <h2>OTP Authentication</h2>
       <input
         type="text"
+        id="phone"
         placeholder="Enter phone number (+91xxxx)"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
@@ -56,6 +57,7 @@ function App() {
 
       <input
         type="text"
+        id="otp"
         placeholder="Enter OTP"
         value={otp}
         onChange={(e) => setOtp(e.target.value)}

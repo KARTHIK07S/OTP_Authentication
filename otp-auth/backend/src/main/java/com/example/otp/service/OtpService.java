@@ -1,5 +1,4 @@
 package com.example.otp.service;
-
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Map;
@@ -20,7 +19,8 @@ import jakarta.annotation.PostConstruct;
 public class OtpService {
 
     private final SecureRandom random = new SecureRandom();
-    private final Map<String, String> otpStore = new ConcurrentHashMap<>();
+    // now store phone -> OtpEntry (otp + expiry)
+    private final Map<String, OtpEntry> otpStore = new ConcurrentHashMap<>();
 
     @Value("${twilio.accountSid}")
     private String twilioSid;
@@ -34,7 +34,7 @@ public class OtpService {
     @Value("${jwt.secret:mysecretkey}")
     private String jwtSecret;
 
-    private static final long OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
+    private static final long OTP_TTL_MS = 5 * 60 * 1000;  // 5 minutes
     private static final long JWT_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
     @PostConstruct
@@ -47,7 +47,8 @@ public class OtpService {
 
     public void generateAndSendOtp(String phone) {
         String otp = String.valueOf(100000 + random.nextInt(900000));
-        otpStore.put(phone, otp);
+        long expiryTime = System.currentTimeMillis() + OTP_TTL_MS;  // ✅ use constant
+        otpStore.put(phone, new OtpEntry(otp, expiryTime));
 
         Message.creator(
                 new PhoneNumber(phone),
@@ -57,16 +58,37 @@ public class OtpService {
     }
 
     public String verifyOtpAndCreateToken(String phone, String otp) {
-        String stored = otpStore.get(phone);
-        if (stored != null && stored.equals(otp)) {
-            otpStore.remove(phone);
-            return Jwts.builder()
-                    .setSubject(phone)
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + JWT_TTL_MS))
-                    .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
-                    .compact();
+        OtpEntry entry = otpStore.get(phone);
+
+        if (entry != null) {
+            // check expiry
+            if (System.currentTimeMillis() > entry.expiryTime) {
+                otpStore.remove(phone);  // expired → remove
+                return null;
+            }
+            // check otp
+            if (entry.otp.equals(otp)) {
+                otpStore.remove(phone); // one-time use
+                return Jwts.builder()
+                        .setSubject(phone)
+                        .setIssuedAt(new Date())
+                        .setExpiration(new Date(System.currentTimeMillis() + JWT_TTL_MS))
+                        .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
+                        .compact();
+            }
         }
         return null;
     }
+
+    // helper class to hold OTP and expiry
+    private static class OtpEntry {
+        String otp;
+        long expiryTime;
+
+        OtpEntry(String otp, long expiryTime) {
+            this.otp = otp;
+            this.expiryTime = expiryTime;
+        }
+    }
 }
+
